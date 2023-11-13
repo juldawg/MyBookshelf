@@ -1,3 +1,0 @@
-@HiltAndroidApp
-class MyBookshelf {
-}

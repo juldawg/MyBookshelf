@@ -3,6 +3,7 @@ package com.example.mybookshelf
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,7 +11,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,24 +27,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.domain.Book
 import com.example.mybookshelf.ui.theme.BookshelfUiState
 import com.example.mybookshelf.ui.theme.BookshelfViewModel
 import com.example.mybookshelf.ui.theme.MyBookshelfTheme
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import kotlinx.coroutines.launch
+import kotlin.reflect.KFunction1
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity: ComponentActivity() {
 
-    @Inject
-    lateinit var viewModel: BookshelfViewModel
+    private val viewModel: BookshelfViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.fetchBooks()
+            }
+        }
         setContent {
             MyBookshelfTheme {
-                MainView(viewModel.uiState)
+                MainView(viewModel.uiState, viewModel::add)
             }
         }
     }
@@ -85,14 +96,30 @@ fun Book(book: Book) {
 }
 
 @Composable
-fun MainView(uiState: BookshelfUiState) {
+fun MainView(uiState: BookshelfUiState, add: KFunction1<Book, Unit>) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        LazyColumn {
-            items(uiState.books) { book ->
-                Book(book)
+        Column(verticalArrangement = Arrangement.SpaceBetween) {
+            LazyColumn {
+                items(uiState.books) { book ->
+                    Book(book)
+                }
+            }
+            FloatingActionButton(
+                onClick = {
+                    add(
+                        Book(
+                            "Capital et Idéologie",
+                            "Thomas Piketty",
+                            3,
+                            "Plutôt cool"
+                        )
+                    )
+                },
+            ) {
+                Icon(Icons.Filled.Add, "Floating action button.")
             }
         }
     }
@@ -108,6 +135,6 @@ fun GreetingPreview() {
         Book("Bullshit Job", "David Graeber", 5, "Super super cooool")
     ).sortedBy(Book::title)
     MyBookshelfTheme {
-        MainView(BookshelfUiState(books = previewBooks))
+        //MainView(BookshelfUiState(books = previewBooks))
     }
 }

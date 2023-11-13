@@ -1,10 +1,11 @@
 package com.example.domain
 
-class BookRepository {
-    val books = listOf(
-        Book("Capital et Idéologie", "Thomas Piketty", 3, "Plutôt cool"),
-        Book("Le Pouvoir Rhétorique", "Clément Viktorovich", 2, "Un peu naze"),
-        Book("Bureaucratie", "David Graeber", 5, "Un truc de ouf !"),
-        Book("Bullshit Job", "David Graeber", 5, "Super super cooool")
-    ).sortedBy(Book::title)
+import kotlinx.coroutines.flow.Flow
+
+
+abstract class BookRepository {
+    //abstract val books: Flow<List<Book>>
+    abstract fun getBooks(): Flow<List<Book>>
+    abstract fun insertBooks(vararg books: Book)
+    abstract fun updateBook(book: Book)
 }
