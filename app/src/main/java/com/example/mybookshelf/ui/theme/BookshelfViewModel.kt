@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 @HiltViewModel
 class BookshelfViewModel @Inject constructor(
@@ -35,7 +36,9 @@ class BookshelfViewModel @Inject constructor(
     }
 
     fun update(book: Book) {
-        repository.updateBook(book)
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.updateBook(book)
+        }
     }
 
     fun add(book: Book) {

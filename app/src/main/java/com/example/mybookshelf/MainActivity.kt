@@ -13,11 +13,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,13 +34,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.domain.Book
 import com.example.mybookshelf.ui.theme.BookshelfUiState
 import com.example.mybookshelf.ui.theme.BookshelfViewModel
 import com.example.mybookshelf.ui.theme.MyBookshelfTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import kotlin.reflect.KFunction1
 
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {
@@ -52,25 +58,24 @@ class MainActivity: ComponentActivity() {
         }
         setContent {
             MyBookshelfTheme {
-                MainView(viewModel.uiState, viewModel::add)
+                MainView(viewModel)
             }
         }
     }
 }
 @Composable
-fun Book(book: Book) {
+fun Book(book: Book, modify: (Book) -> Unit) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         var isExpanded by remember { mutableStateOf(false) }
-        var rating by remember { mutableStateOf(book.rating) }
         Row(
-            modifier = Modifier.clickable { isExpanded = !isExpanded },
+            modifier = Modifier.clickable { isExpanded = !isExpanded }.padding(all = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(modifier = Modifier.padding(all = 8.dp)) {
+            Column {
                 Text(book.title, style = MaterialTheme.typography.labelLarge)
                 Text(
                     book.author,
@@ -78,7 +83,8 @@ fun Book(book: Book) {
                     style = MaterialTheme.typography.labelSmall
                 )
                 AnimatedVisibility (isExpanded) {
-                    Text(book.notes)
+                    Text(book.notes.let { it.ifEmpty { "Add your notes" } }, maxLines = 5)
+
                 }
             }
             LazyRow {
@@ -86,8 +92,8 @@ fun Book(book: Book) {
                     Icon(
                         Icons.Rounded.Star,
                         contentDescription = "star",
-                        modifier = Modifier.clickable { rating = it + 1 },
-                        tint = if (it < rating) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
+                        modifier = Modifier.clickable { modify(book.copy(rating = it + 1)) },
+                        tint = if (it < book.rating) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
                         )
                 }
             }
@@ -96,30 +102,36 @@ fun Book(book: Book) {
 }
 
 @Composable
-fun MainView(uiState: BookshelfUiState, add: KFunction1<Book, Unit>) {
-    Surface(
+fun MainView(viewModel: BookshelfViewModel) {
+
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "home") {
+        composable("home") { Home(viewModel.uiState, { navController.navigate("addBook") }, { viewModel.update(it) })  }
+        composable("addBook") { BookCreationView({ book -> viewModel.add(book) }, { navController.popBackStack() })
+        }
+    }
+
+}
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Home(uiState: BookshelfUiState, didPressAddButton: () -> Unit, didModify: (Book) -> Unit) {
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        topBar = { Column(modifier = Modifier.padding(16.dp)) { Text("My Bookshelf", style = MaterialTheme.typography.headlineSmall) } },
+        floatingActionButton = {
+            FloatingActionButton(onClick = didPressAddButton) {
+                Icon(Icons.Filled.Add, "Floating action button.")
+            }
+        }
     ) {
-        Column(verticalArrangement = Arrangement.SpaceBetween) {
+        Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(it)) {
             LazyColumn {
                 items(uiState.books) { book ->
-                    Book(book)
+                    Book(book, didModify)
                 }
-            }
-            FloatingActionButton(
-                onClick = {
-                    add(
-                        Book(
-                            "Capital et Idéologie",
-                            "Thomas Piketty",
-                            3,
-                            "Plutôt cool"
-                        )
-                    )
-                },
-            ) {
-                Icon(Icons.Filled.Add, "Floating action button.")
             }
         }
     }
@@ -127,7 +139,7 @@ fun MainView(uiState: BookshelfUiState, add: KFunction1<Book, Unit>) {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun HomePreview() {
     val previewBooks = listOf(
         Book("Capital et Idéologie", "Thomas Piketty", 3, "Plutôt cool"),
         Book("Le Pouvoir Rhétorique", "Clément Viktorovich", 2, "Un peu naze"),
@@ -135,6 +147,6 @@ fun GreetingPreview() {
         Book("Bullshit Job", "David Graeber", 5, "Super super cooool")
     ).sortedBy(Book::title)
     MyBookshelfTheme {
-        //MainView(BookshelfUiState(books = previewBooks))
+        Home(uiState = BookshelfUiState(books = previewBooks), {}) {}
     }
 }
