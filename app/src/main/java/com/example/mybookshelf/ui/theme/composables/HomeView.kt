@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,7 +40,6 @@ import com.example.domain.Book
 import com.example.mybookshelf.ui.theme.BookshelfUiState
 import com.example.mybookshelf.ui.theme.MyBookshelfTheme
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(
@@ -52,7 +52,10 @@ fun Home(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(Icons.Rounded.Menu, "Menu")
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
@@ -68,39 +71,63 @@ fun Home(
             }
         }
     ) {
-        Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(it)) {
-            LazyColumn {
-                items(uiState.books) { book ->
-                    Book(book, didModify, seeNotes, editNotes)
-                }
+        BookList(it, uiState, didModify, seeNotes, editNotes)
+    }
+}
+
+@Composable
+private fun BookList(
+    it: PaddingValues,
+    uiState: BookshelfUiState,
+    didModify: (Book) -> Unit,
+    seeNotes: (String) -> Unit,
+    editNotes: (String) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(it)) {
+        var expanded: String? by remember {
+            mutableStateOf(null)
+        }
+        LazyColumn {
+            items(uiState.books) { book ->
+                Book(
+                    book,
+                    didModify,
+                    seeNotes,
+                    editNotes,
+                    expanded == book.title,
+                    toggleIsExpanded = { expanded = if (expanded == book.title) null else book.title }
+                )
             }
         }
     }
 }
+
 @Composable
 private fun Book(
     book: Book,
     modify: (Book) -> Unit,
     seeNotes: (String) -> Unit,
-    editNotes: (String) -> Unit
+    editNotes: (String) -> Unit,
+    isExpanded: Boolean,
+    toggleIsExpanded: () -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp),
         colors = CardDefaults.cardColors(
-            if(isExpanded) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
+            if (isExpanded) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
         )
     ) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(all = 16.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp)
         ) {
             Row(
                 modifier = Modifier
-                    .clickable { isExpanded = !isExpanded }
+                    .clickable { toggleIsExpanded() }
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
