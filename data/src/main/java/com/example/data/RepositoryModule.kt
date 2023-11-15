@@ -1,7 +1,6 @@
 package com.example.data
 
 import android.content.Context
-import com.example.data.BookRepositoryImpl
 import com.example.domain.BookRepository
 import dagger.Module
 import dagger.Provides

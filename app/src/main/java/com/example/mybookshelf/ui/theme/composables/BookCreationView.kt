@@ -1,16 +1,11 @@
-package com.example.mybookshelf
+package com.example.mybookshelf.ui.theme.composables
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.domain.Book
-import com.example.mybookshelf.ui.theme.BookshelfUiState
 import com.example.mybookshelf.ui.theme.MyBookshelfTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,17 +35,32 @@ fun BookCreationView(add: (Book) -> Unit, goBack: () -> Unit) {
     var author by remember { mutableStateOf("") }
     Scaffold(
         topBar = { TopBar(goBack) },
-        bottomBar = { Surface(modifier = Modifier.fillMaxWidth().padding(8.dp)) { Button(onClick = {
-            add(Book(title, author, 1, ""))
-            goBack()
-        }) {
-            Text("Confirm")
-        }}}
+        bottomBar = {
+            Surface(modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)) {
+                Button(onClick = {
+                    add(Book(title, author, 1, ""))
+                    goBack()
+                }) {
+                    Text("Confirm")
+                }
+            }
+        }
     ) { padding ->
-        Box(modifier = Modifier.padding(padding), Alignment.Center) {
+        Box(modifier = Modifier.padding(padding)) {
             Column(Modifier.padding(8.dp)) {
-                TextField(value = title, onValueChange = { title = it }, label = { Text("Title") })
                 TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Title") })
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
                     value = author,
                     onValueChange = { author = it },
                     label = { Text("Author") })
@@ -61,8 +70,11 @@ fun BookCreationView(add: (Book) -> Unit, goBack: () -> Unit) {
 }
 
 @Composable
-fun TopBar(back: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+private fun TopBar(back: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         IconButton(onClick = back) {
             Icon(Icons.Filled.ArrowBack, "go back")
         }

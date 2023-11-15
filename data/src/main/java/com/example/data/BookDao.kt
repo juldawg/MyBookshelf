@@ -13,7 +13,7 @@ interface BookDao {
     fun getAll(): Flow<List<Book>>
 
     @Query("SELECT * FROM book WHERE title LIKE :title LIMIT 1")
-    fun findByName(title: String): Book
+    fun findByName(title: String): Flow<Book>
 
     @Insert
     fun insertAll(vararg books: Book)
