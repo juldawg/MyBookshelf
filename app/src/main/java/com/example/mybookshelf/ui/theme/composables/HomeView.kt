@@ -37,13 +37,12 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.domain.Book
-import com.example.mybookshelf.ui.theme.BookshelfUiState
 import com.example.mybookshelf.ui.theme.MyBookshelfTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(
-    uiState: BookshelfUiState,
+    books: List<Book>,
     didPressAddButton: () -> Unit,
     didModify: (Book) -> Unit,
     seeNotes: (String) -> Unit,
@@ -71,14 +70,14 @@ fun Home(
             }
         }
     ) {
-        BookList(it, uiState, didModify, seeNotes, editNotes)
+        BookList(it, books, didModify, seeNotes, editNotes)
     }
 }
 
 @Composable
 private fun BookList(
     it: PaddingValues,
-    uiState: BookshelfUiState,
+    books: List<Book>,
     didModify: (Book) -> Unit,
     seeNotes: (String) -> Unit,
     editNotes: (String) -> Unit
@@ -88,7 +87,7 @@ private fun BookList(
             mutableStateOf(null)
         }
         LazyColumn {
-            items(uiState.books) { book ->
+            items(books) { book ->
                 Book(
                     book,
                     didModify,
@@ -184,6 +183,6 @@ fun HomePreview() {
         Book("Bullshit Job", "David Graeber", 5, "Super super cooool")
     ).sortedBy(Book::title)
     MyBookshelfTheme {
-        Home(uiState = BookshelfUiState(books = previewBooks), {}, {}, {}) {}
+        Home(previewBooks, {}, {}, {}) {}
     }
 }

@@ -1,5 +1,7 @@
 package com.example.mybookshelf.ui.theme.composables
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,9 +29,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.mybookshelf.ui.theme.NotesViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.mybookshelf.ui.theme.NotesViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesView(
@@ -37,48 +40,49 @@ fun NotesView(
     bookTitle: String, goBack: () -> Unit,
     initialMode: NotesMode = NotesMode.BROWSING
 ) {
-    viewModel.fetchBook(bookTitle)
-    val notes by viewModel.notes.collectAsState()
-    var outputNotes by remember { mutableStateOf(notes) }
-    var notesMode by remember { mutableStateOf(initialMode) }
-    Scaffold(
-        topBar = {
-            TopBar(
-                {
-                    when (notesMode) {
-                        NotesMode.BROWSING -> goBack()
-                        NotesMode.EDITING -> notesMode = NotesMode.BROWSING
-                    }
-                },
-                notesMode
-            ) { notesMode = NotesMode.EDITING }
-        },
-        bottomBar = {
-            if (notesMode == NotesMode.EDITING) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    Button(onClick = {
-                        viewModel.update(outputNotes)
-                        notesMode = NotesMode.BROWSING
-                    }) {
-                        Text("Confirm")
+    val notes by viewModel.getNotes(bookTitle).collectAsState(null)
+    notes?.let {
+        var outputNotes by remember { mutableStateOf(it) }
+        var notesMode by remember { mutableStateOf(initialMode) }
+        Scaffold(
+            topBar = {
+                TopBar(
+                    {
+                        when (notesMode) {
+                            NotesMode.BROWSING -> goBack()
+                            NotesMode.EDITING -> notesMode = NotesMode.BROWSING
+                        }
+                    },
+                    notesMode
+                ) { notesMode = NotesMode.EDITING }
+            },
+            bottomBar = {
+                if (notesMode == NotesMode.EDITING) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        Button(onClick = {
+                            viewModel.update(outputNotes)
+                            notesMode = NotesMode.BROWSING
+                        }) {
+                            Text("Confirm")
+                        }
                     }
                 }
             }
-        }
-    ) { padding ->
-        Column(modifier = Modifier.padding(vertical = padding.calculateTopPadding())) {
-            when (notesMode) {
-                NotesMode.EDITING -> EditableNotes(notes) { outputNotes = it }
-                NotesMode.BROWSING -> Text(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    text = notes
-                )
+        ) { padding ->
+            Column(modifier = Modifier.padding(vertical = padding.calculateTopPadding())) {
+                when (notesMode) {
+                    NotesMode.EDITING -> EditableNotes(outputNotes) { outputNotes = it }
+                    NotesMode.BROWSING -> Text(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        text = outputNotes
+                    )
+                }
             }
         }
     }
@@ -91,10 +95,9 @@ enum class NotesMode {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EditableNotes(notes: String, outputNotes: (String) -> Unit) {
-    var text by remember { mutableStateOf(notes) }
     OutlinedTextField(
-        value = text,
-        onValueChange = { text = it; outputNotes(it) },
+        value = notes,
+        onValueChange = { outputNotes(it) },
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)

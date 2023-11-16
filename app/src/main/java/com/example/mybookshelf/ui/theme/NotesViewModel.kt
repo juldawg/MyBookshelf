@@ -1,14 +1,16 @@
 package com.example.mybookshelf.ui.theme
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.Book
 import com.example.domain.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,21 +18,21 @@ import javax.inject.Inject
 class NotesViewModel @Inject constructor(
     private val repository: BookRepository,
 ) : ViewModel() {
-    private val book: MutableStateFlow<Book?> = MutableStateFlow(null)
-    val notes: MutableStateFlow<String> = MutableStateFlow("")
-    //private var fetchJob: Job? = null
-    fun fetchBook(title: String) {
+
+    private var book: Book? by mutableStateOf(null)
+
+    fun getNotes(bookTitle: String): Flow<String> {
+        val bookFlow = repository.getBook(bookTitle)
         viewModelScope.launch {
-            repository.getBook(title).onEach {
-                book.value = it
-                notes.value = it.notes
-            }.collect()
+            bookFlow.collect { book = it }
         }
+        return bookFlow.map { it.notes }
     }
+
 
     fun update(notes: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            book.value?.let { repository.updateBook(it.copy(notes = notes)) }
+            book?.let { repository.updateBook(it.copy(notes = notes)) }
         }
     }
 }
