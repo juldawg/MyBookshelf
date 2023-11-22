@@ -21,7 +21,7 @@ class NotesViewModel @Inject constructor(
 
     private var book: Book? by mutableStateOf(null)
 
-    fun getNotes(bookTitle: String): Flow<String> {
+    fun getNotes(bookTitle: String): Flow<String?> {
         val bookFlow = repository.getBook(bookTitle)
         viewModelScope.launch {
             bookFlow.collect { book = it }

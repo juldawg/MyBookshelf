@@ -94,7 +94,9 @@ private fun BookList(
                     seeNotes,
                     editNotes,
                     expanded == book.title,
-                    toggleIsExpanded = { expanded = if (expanded == book.title) null else book.title }
+                    toggleIsExpanded = {
+                        expanded = if (expanded == book.title) null else book.title
+                    }
                 )
             }
         }
@@ -134,7 +136,8 @@ private fun Book(
                 Column {
                     Text(book.title, style = MaterialTheme.typography.titleLarge)
                     Text(
-                        book.author,
+                        book.authors?.joinToString() ?: book.publishers?.joinToString()
+                        ?: "unknown",
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium
                     )
@@ -145,15 +148,15 @@ private fun Book(
                             Icons.Rounded.Star,
                             contentDescription = "star",
                             modifier = Modifier.clickable { modify(book.copy(rating = it + 1)) },
-                            tint = if (it < book.rating) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
+                            tint = if (it < (book.rating ?: 0)) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
             }
             AnimatedVisibility(isExpanded) {
                 Column(modifier = Modifier.padding(top = 24.dp)) {
-                    if (book.notes.isNotEmpty()) {
-                        Text(book.notes, maxLines = 5)
+                    book.notes?.let {
+                        Text(it, maxLines = 5)
                         Text(
                             modifier = Modifier
                                 .clickable { seeNotes(book.title) }
@@ -162,10 +165,8 @@ private fun Book(
                             text = "See all",
                             textDecoration = TextDecoration.Underline
                         )
-                    } else {
-                        Button({ editNotes(book.title) }) {
-                            Text("Add your notes")
-                        }
+                    } ?: Button({ editNotes(book.title) }) {
+                        Text("Add your notes")
                     }
                 }
             }
@@ -176,13 +177,13 @@ private fun Book(
 @Preview(showBackground = true)
 @Composable
 fun HomePreview() {
-    val previewBooks = listOf(
-        Book("Capital et Idéologie", "Thomas Piketty", 3, "Plutôt cool"),
-        Book("Le Pouvoir Rhétorique", "Clément Viktorovich", 2, "Un peu naze"),
-        Book("Bureaucratie", "David Graeber", 5, "Un truc de ouf !"),
-        Book("Bullshit Job", "David Graeber", 5, "Super super cooool")
-    ).sortedBy(Book::title)
+//    val previewBooks = listOf(
+//        Book("Capital et Idéologie", "Thomas Piketty",, 3, "Plutôt cool"),
+//        Book("Le Pouvoir Rhétorique", "Clément Viktorovich",, 2, "Un peu naze"),
+//        Book("Bureaucratie", "David Graeber",, 5, "Un truc de ouf !"),
+//        Book("Bullshit Job", "David Graeber",, 5, "Super super cooool")
+//    ).sortedBy(Book::title)
     MyBookshelfTheme {
-        Home(previewBooks, {}, {}, {}) {}
+        // Home(previewBooks, {}, {}, {}) {}
     }
 }
