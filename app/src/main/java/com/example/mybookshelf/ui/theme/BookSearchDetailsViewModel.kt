@@ -9,35 +9,40 @@ import com.example.domain.Book
 import com.example.domain.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class NotesViewModel @Inject constructor(
+class BookSearchDetailsViewModel @Inject constructor(
     private val repository: BookRepository,
 ) : ViewModel() {
+    constructor() : this(BookRepositoryMock())
 
     private var book: Book? by mutableStateOf(null)
 
-    var isInitialized: Boolean by mutableStateOf(false)
+    val isAddButtonEnabled: Flow<Boolean> = flow {
+        while(true) {
+            book?.let { book ->
+                repository.getBook(book.title).collect {
+                    emit(it == null)
+                }
 
-    fun getNotes(bookTitle: String): Flow<String?> {
-        val bookFlow = repository.getBook(bookTitle)
-        viewModelScope.launch {
-            bookFlow.collect {
-                book = it
-                isInitialized = true
-            }
+            } ?: emit(false)
+            delay(100)
         }
-        return bookFlow.map { it?.notes }
     }
 
+    fun search(key: String): Flow<Book?> = flow {
+        book = repository.searchBook(key).firstOrNull()
+        emit(book)
+    }
 
-    fun update(notes: String) {
+    fun addToBookshelf() {
         viewModelScope.launch(Dispatchers.IO) {
-            book?.let { repository.updateBook(it.copy(notes = notes)) }
+            book?.let { repository.insertBooks(listOf(it)) }
         }
     }
 }

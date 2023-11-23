@@ -96,6 +96,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     kapt("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0")
+    implementation("io.coil-kt:coil-compose:2.5.0")
     val lifecycle_version = "2.6.2"
 
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")

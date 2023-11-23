@@ -16,7 +16,11 @@ interface BookDao {
 
     @Transaction
     @Query("SELECT * FROM book WHERE isbn10 LIKE :id OR isbn13 LIKE :id LIMIT 1")
-    fun findById(id: String): Flow<BookEntity>
+    fun findById(id: String): Flow<BookEntity?>
+
+    @Transaction
+    @Query("SELECT * FROM book WHERE title LIKE :title LIMIT 1")
+    fun findByTitle(title: String): Flow<BookEntity?>
 
     @Insert
     fun insertBooks(books: List<Book>)

@@ -23,10 +23,4 @@ class BookshelfViewModel @Inject constructor(
         }
     }
 
-    fun add(book: Book) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.insertBooks(listOf(book))
-        }
-    }
-
 }

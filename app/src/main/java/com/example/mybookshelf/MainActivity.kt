@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mybookshelf.ui.theme.BookshelfViewModel
 import com.example.mybookshelf.ui.theme.MyBookshelfTheme
 import com.example.mybookshelf.ui.theme.composables.BookCreationView
+import com.example.mybookshelf.ui.theme.composables.BookDetails
 import com.example.mybookshelf.ui.theme.composables.Home
 import com.example.mybookshelf.ui.theme.composables.NotesMode
 import com.example.mybookshelf.ui.theme.composables.NotesView
@@ -62,8 +63,8 @@ fun MainView(viewModel: BookshelfViewModel) {
         }
         composable("addBook") {
             BookCreationView(
-                { book -> viewModel.add(book) },
-                { navController.popBackStack() })
+                { navController.popBackStack() },
+                { book -> navController.navigate("bookDetails/$book") })
         }
         composable("seeNotes/{book}") { backStackEntry ->
             backStackEntry.arguments?.getString("book")?.let {
@@ -81,6 +82,11 @@ fun MainView(viewModel: BookshelfViewModel) {
                     goBack = { navController.popBackStack() },
                     initialMode = NotesMode.EDITING
                 )
+            }
+        }
+        composable("bookDetails/{book}") {backStackEntry ->
+            backStackEntry.arguments?.getString("book")?.let {
+                BookDetails(goBack = { navController.popBackStack() }, it)
             }
         }
     }

@@ -33,13 +33,13 @@ data class Book(
     val rating: Int? = null,
     val notes: String? = null
 )
-@Entity
+@Entity(primaryKeys = ["title", "name"])
 data class AuthorEntity(
     val title: String,
-    @PrimaryKey val name: String
+    val name: String
 )
-@Entity
+@Entity(primaryKeys = ["title", "name"])
 data class PublisherEntity(
     val title: String,
-    @PrimaryKey val name: String
+    val name: String
 )
