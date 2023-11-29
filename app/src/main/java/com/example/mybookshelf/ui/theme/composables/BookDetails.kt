@@ -1,17 +1,15 @@
 package com.example.mybookshelf.ui.theme.composables
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,8 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.domain.Book
 import com.example.mybookshelf.R
 import com.example.mybookshelf.ui.theme.BookSearchDetailsViewModel
+import com.example.mybookshelf.ui.theme.composables.common.ProgressIndicator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,69 +46,8 @@ fun BookDetails(
         topBar = { TopBar(goBack) },
         content = { padding ->
             book?.let {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(16.dp)
-                ) {
-                    // Book Cover
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(
-                                it.cover
-                                    ?: "https://static.vecteezy.com/system/resources/previews/024/043/963/original/book-icon-clipart-transparent-background-free-png.png"
-                            )
-                            .crossfade(true)
-                            .build(),
-                        placeholder = painterResource(R.drawable.baseline_menu_book_24),
-                        contentDescription = "book cover",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .padding(bottom = 16.dp)
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    )
-
-                    // Book Title
-                    Text(
-                        text = it.title,
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-
-                    // Book Authors/Publishers
-                    Text(
-                        text = it.authors?.joinToString() ?: it.publishers?.joinToString()
-                        ?: "unknown",
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-
-                    // Other Book Information
-                    it.isbn10?.let {
-                        Text(text = "ISBN-10: $it", modifier = Modifier.padding(bottom = 4.dp))
-                    }
-
-                    it.isbn13?.let {
-                        Text(text = "ISBN-13: $it", modifier = Modifier.padding(bottom = 4.dp))
-                    }
-
-                    it.numberOfPages?.let {
-                        Text(
-                            text = "Number of Pages: $it",
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-                    }
-                }
-            } ?: Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(60.dp)
-                        .fillMaxSize()
-                )
-            }
+                Details(padding, it)
+            } ?: ProgressIndicator()
         },
         bottomBar = {
             val isEnabled by viewModel.isAddButtonEnabled.collectAsState(initial = false)
@@ -128,6 +67,69 @@ fun BookDetails(
     )
 }
 
+@Composable
+private fun Details(
+    padding: PaddingValues,
+    book: Book
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)
+            .padding(16.dp)
+    ) {
+        // Book Cover
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(
+                    book.cover
+                        ?: "https://static.vecteezy.com/system/resources/previews/024/043/963/original/book-icon-clipart-transparent-background-free-png.png"
+                )
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(R.drawable.baseline_menu_book_24),
+            contentDescription = "book cover",
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .fillMaxWidth()
+                .height(200.dp)
+        )
+
+        // Book Title
+        Text(
+            text = book.title,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        // Book Authors/Publishers
+        Text(
+            text = book.authors?.joinToString() ?: book.publishers?.joinToString()
+            ?: "unknown",
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        // Other Book Information
+        book.isbn10?.let {
+            Text(text = "ISBN-10: $it", modifier = Modifier.padding(bottom = 4.dp))
+        }
+
+        book.isbn13?.let {
+            Text(text = "ISBN-13: $it", modifier = Modifier.padding(bottom = 4.dp))
+        }
+
+        book.numberOfPages?.let {
+            Text(
+                text = "Number of Pages: $it",
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+        }
+    }
+}
+
 
 @Composable
 private fun TopBar(back: () -> Unit) {
@@ -142,6 +144,7 @@ private fun TopBar(back: () -> Unit) {
     }
 }
 
+@Preview(showBackground = true)
 @Composable
 fun BookDetailsPreview() {
     BookDetails(
@@ -149,11 +152,4 @@ fun BookDetailsPreview() {
         bookId = "dumbId",
         viewModel = BookSearchDetailsViewModel()
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun BookDetailsPreviewDark() {
-    // If you have a dark theme, you can create a dark theme preview
-    BookDetailsPreview()
 }
