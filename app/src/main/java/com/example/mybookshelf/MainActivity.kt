@@ -1,11 +1,9 @@
 package com.example.mybookshelf
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,7 +24,6 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: BookshelfViewModel by viewModels()
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -37,7 +34,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainView(viewModel: BookshelfViewModel) {
     val navController = rememberNavController()

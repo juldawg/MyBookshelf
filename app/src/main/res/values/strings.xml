@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MyBookshelf</string>
+    <string name="fake_notes">
+        <p>Lorem ipsum dolor sit amet. Et enim ipsum aut nihil quidem ea quia praesentium aut vero dolorem et sapiente magnam quo iste accusantium qui harum recusandae. Non voluptates nihil a odio eligendi et doloribus nihil et illum dolorem. </p><p>Ut possimus aliquam est officia quia aut dolorum recusandae sit esse beatae aut obcaecati voluptates. Non deserunt accusantium et vitae culpa et iste repudiandae! Et esse aliquam ut suscipit voluptatem vel nobis officia ex reiciendis consectetur ea aspernatur magnam. Et sint officia et omnis aliquid qui voluptas eligendi. </p><p>Ex officia dolor et dolorem repellendus ea optio fugiat ut voluptas eligendi non veniam expedita et consequatur inventore. Est pariatur aliquam et sunt quidem et ipsum sint et ullam neque eos porro nesciunt et cumque quod? Et molestiae commodi nam necessitatibus esse sed quam ratione. Ab nostrum sequi vel voluptas atque et commodi beatae. </p>
+
+    </string>
+    <string name="confirm">Confirm</string>
+    <string name="pageSeparator">§</string>
 </resources>

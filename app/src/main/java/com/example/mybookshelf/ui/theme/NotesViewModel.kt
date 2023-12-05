@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.Book
 import com.example.domain.BookRepository
+import com.example.mybookshelf.ui.theme.uistate.NotesUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -21,17 +22,14 @@ class NotesViewModel @Inject constructor(
 
     private var book: Book? by mutableStateOf(null)
 
-    var isInitialized: Boolean by mutableStateOf(false)
-
-    fun getNotes(bookTitle: String): Flow<String?> {
+    fun getNotes(bookTitle: String): Flow<NotesUiState> {
         val bookFlow = repository.getBook(bookTitle)
         viewModelScope.launch {
             bookFlow.collect {
                 book = it
-                isInitialized = true
             }
         }
-        return bookFlow.map { it?.notes }
+        return bookFlow.map { NotesUiState(it?.notes) }
     }
 
 
