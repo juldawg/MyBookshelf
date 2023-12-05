@@ -182,7 +182,12 @@ private fun Book(
             AnimatedVisibility(isExpanded) {
                 Column(modifier = Modifier.padding(top = 24.dp)) {
                     book.notes?.let {
-                        Text(it, maxLines = 5, overflow = TextOverflow.Ellipsis)
+                        Text("Notes: \n")
+                        Text(
+                            it.replace("§", "\n\n"),
+                            maxLines = 8,
+                            overflow = TextOverflow.Ellipsis
+                        )
                         Text(
                             modifier = Modifier
                                 .clickable { seeNotes(book.title) }
