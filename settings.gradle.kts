@@ -19,3 +19,4 @@ rootProject.name = "MyBookshelf"
 include(":app")
 include(":domain")
 include(":data")
+include(":ui")

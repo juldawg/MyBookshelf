@@ -1,16 +1,16 @@
 plugins {
+    kotlin("kapt")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
-    kotlin("kapt")
 }
 
 android {
-    namespace = "com.example.mybookshelf"
+    namespace = "com.viseo.mybookshelf"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.mybookshelf"
+        applicationId = "com.viseo.mybookshelf"
         minSdk = 21
         //noinspection EditedTargetSdkVersion
         targetSdk = 34
@@ -63,6 +63,7 @@ android {
 dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
+    implementation(project(":ui"))
     val nav_version = "2.7.5"
 
     // Kotlin

@@ -10,5 +10,4 @@ plugins {
 }
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("com.google.dagger:hilt-android-gradle-plugin:2.44")
 }

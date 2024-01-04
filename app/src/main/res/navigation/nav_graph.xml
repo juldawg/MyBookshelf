@@ -6,6 +6,6 @@
 
     <activity
         android:id="@+id/mainActivity"
-        android:name="com.example.mybookshelf.MainActivity"
+        android:name="com.viseo.mybookshelf.MainActivity"
         android:label="MainActivity" />
 </navigation>
