@@ -15,11 +15,11 @@ class BookshelfViewModel @Inject constructor(
     private val repository: BookRepository,
 ) : ViewModel() {
 
-    val books: Flow<List<Book>> = repository.getBooks()
+    val books: Flow<List<Book>> = repository.savedBooks
 
     fun update(book: Book) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.updateBook(book)
+            repository.update(book)
         }
     }
 

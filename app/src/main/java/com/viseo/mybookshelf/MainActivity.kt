@@ -10,8 +10,8 @@ import androidx.navigation.compose.rememberNavController
 import com.viseo.mybookshelf.ui.booksearch.BookSearchScreen
 import com.viseo.mybookshelf.ui.bookshelfbrowsing.BookshelfScreen
 import com.viseo.mybookshelf.ui.common.BookDetails
+import com.viseo.mybookshelf.ui.common.theme.MyBookshelfTheme
 import com.viseo.mybookshelf.ui.notesmanagement.NotesScreen
-import com.viseo.mybookshelf.ui.theme.MyBookshelfTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -47,8 +47,8 @@ fun MainView() {
         }
         composable("addBook") {
             BookSearchScreen(
-                { navController.popBackStack() },
-                { book -> navController.navigate("bookDetails/$book") })
+                goBack = { navController.popBackStack() },
+                goToDetail = { book -> navController.navigate("bookDetails/$book") })
         }
         composable("seeNotes/{book}") { backStackEntry ->
             backStackEntry.arguments?.getString("book")?.let {

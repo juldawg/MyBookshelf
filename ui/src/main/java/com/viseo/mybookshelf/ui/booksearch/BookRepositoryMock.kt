@@ -5,8 +5,9 @@ import com.viseo.mybookshelf.domain.BookRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-class BookRepositoryMock : BookRepository() {
-    override fun getBooks(): Flow<List<Book>> = flowOf(
+class BookRepositoryMock : BookRepository {
+    override val savedBooks: Flow<List<Book>>
+        get() = flowOf(
         listOf(
             Book(
                 isbn10 = "0123456789",
@@ -77,19 +78,19 @@ class BookRepositoryMock : BookRepository() {
         ).sortedBy(Book::title)
     )
 
-    override fun getBook(title: String): Flow<Book?> {
+    override fun getOfTitle(title: String): Flow<Book?> {
         TODO("Not yet implemented")
     }
 
-    override fun insertBooks(books: List<Book>) {
+    override fun insert(books: Collection<Book>) {
         TODO("Not yet implemented")
     }
 
-    override fun updateBook(book: Book) {
+    override fun update(book: Book) {
         TODO("Not yet implemented")
     }
 
-    override fun searchBook(key: String): List<Book> = listOf(
+    override suspend fun findWithIsbn(isbn: String): List<Book> = listOf(
         Book(
             isbn10 = "1234567890",
             isbn13 = "9781234567890",

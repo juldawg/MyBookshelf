@@ -1,4 +1,4 @@
-package com.viseo.mybookshelf.ui.theme
+package com.viseo.mybookshelf.ui.common.theme
 
 import androidx.compose.ui.graphics.Color
 

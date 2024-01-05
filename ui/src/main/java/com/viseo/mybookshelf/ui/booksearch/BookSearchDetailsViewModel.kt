@@ -26,7 +26,7 @@ class BookSearchDetailsViewModel @Inject constructor(
     val isAddButtonEnabled: Flow<Boolean> = flow {
         while(true) {
             book?.let { book ->
-                repository.getBook(book.title).collect {
+                repository.getOfTitle(book.title).collect {
                     emit(it == null)
                 }
 
@@ -36,13 +36,13 @@ class BookSearchDetailsViewModel @Inject constructor(
     }
 
     fun search(key: String): Flow<Book?> = flow {
-        book = repository.searchBook(key).firstOrNull()
+        book = repository.findWithIsbn(key).firstOrNull()
         emit(book)
     }
 
     fun addToBookshelf() {
         viewModelScope.launch(Dispatchers.IO) {
-            book?.let { repository.insertBooks(listOf(it)) }
+            book?.let { repository.insert(listOf(it)) }
         }
     }
 }

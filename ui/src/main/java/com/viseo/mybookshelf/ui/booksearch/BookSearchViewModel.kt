@@ -15,14 +15,15 @@ import javax.inject.Inject
 @HiltViewModel
 class BookSearchViewModel @Inject constructor(
     private val repository: BookRepository,
+    initialResults: List<Book> = emptyList()
 ) : ViewModel() {
 
-    var results: List<Book> by mutableStateOf(listOf())
+    var results: List<Book> by mutableStateOf(initialResults)
         private set
 
     fun search(key: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            results = repository.searchBook(key)
+            results = repository.findWithIsbn(key).toList()
         }
     }
 }

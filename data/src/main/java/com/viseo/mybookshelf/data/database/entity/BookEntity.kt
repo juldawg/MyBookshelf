@@ -25,21 +25,23 @@ data class BookEntity(
 )
 @Entity
 data class Book(
-    val isbn10: String?,
-    val isbn13: String?,
-    @PrimaryKey val title: String,
-    val cover: String?,
+    @ColumnInfo(name = "isbn10") val isbn10: String?,
+    @ColumnInfo(name = "isbn13") val isbn13: String?,
+    @PrimaryKey @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "cover") val cover: String?,
     @ColumnInfo(name = "number_of_pages") val numberOfPages: Int?,
-    val rating: Int? = null,
-    val notes: String? = null
+    @ColumnInfo(name = "rating") val rating: Int? = null,
+    @ColumnInfo(name = "notes") val notes: String? = null
 )
+
 @Entity(primaryKeys = ["title", "name"])
 data class AuthorEntity(
-    val title: String,
-    val name: String
+    @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "name") val name: String
 )
+
 @Entity(primaryKeys = ["title", "name"])
 data class PublisherEntity(
-    val title: String,
-    val name: String
+    @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "name") val name: String
 )

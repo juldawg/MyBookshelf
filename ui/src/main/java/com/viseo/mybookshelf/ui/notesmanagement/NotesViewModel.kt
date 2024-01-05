@@ -21,20 +21,20 @@ class NotesViewModel @Inject constructor(
 
     private var book: Book? by mutableStateOf(null)
 
-    fun getNotes(bookTitle: String): Flow<com.viseo.mybookshelf.ui.notesmanagement.NotesUiState> {
-        val bookFlow = repository.getBook(bookTitle)
+    fun getNotes(bookTitle: String): Flow<NotesUiState> {
+        val bookFlow = repository.getOfTitle(bookTitle)
         viewModelScope.launch {
             bookFlow.collect {
                 book = it
             }
         }
-        return bookFlow.map { com.viseo.mybookshelf.ui.notesmanagement.NotesUiState(it?.notes) }
+        return bookFlow.map { NotesUiState(it?.notes) }
     }
 
 
     fun update(notes: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            book?.let { repository.updateBook(it.copy(notes = notes)) }
+            book?.let { repository.update(it.copy(notes = notes)) }
         }
     }
 }

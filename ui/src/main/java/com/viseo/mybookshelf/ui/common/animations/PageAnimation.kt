@@ -1,4 +1,4 @@
-package com.viseo.mybookshelf.ui.animations
+package com.viseo.mybookshelf.ui.common.animations
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.PagerState

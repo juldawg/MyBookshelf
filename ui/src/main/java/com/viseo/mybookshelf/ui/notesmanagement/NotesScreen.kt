@@ -42,9 +42,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.viseo.mybookshelf.ui.R
-import com.viseo.mybookshelf.ui.animations.pageAnimation
 import com.viseo.mybookshelf.ui.booksearch.BookRepositoryMock
 import com.viseo.mybookshelf.ui.common.ProgressIndicator
+import com.viseo.mybookshelf.ui.common.animations.pageAnimation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -57,7 +57,7 @@ fun NotesScreen(
 ) {
     val uiState by viewModel.getNotes(bookTitle).collectAsState(null)
     uiState?.let {
-        Notes(uiState!!.notes, initialMode, goBack, viewModel)
+        Notes(it.notes, initialMode, goBack, viewModel)
     } ?: ProgressIndicator()
 }
 
@@ -90,14 +90,19 @@ private fun Notes(
                 didPressEdit = { notesMode = NotesMode.EDITING })
         },
         bottomBar = {
-            BottomBar(notesMode, scope, pagerState, {
-                scope.launch {
-                    outputNotes += "§"
-                }
-            }) {
-                viewModel.update(outputNotes)
-                notesMode = NotesMode.BROWSING
-            }
+            BottomBar(
+                notesMode = notesMode,
+                scope = scope,
+                pagerState = pagerState,
+                didPressNewPage = {
+                    scope.launch {
+                        outputNotes += "§"
+                    }
+                },
+                didPressConfirm = {
+                    viewModel.update(outputNotes)
+                    notesMode = NotesMode.BROWSING
+                })
         }
     ) { padding ->
         Column(
@@ -172,7 +177,7 @@ private fun BottomBar(
                     Icon(Icons.Rounded.ArrowBack, "previous page")
                 }
 
-                Text((pagerState.currentPage + 1).toString() + " / " + pagerState.pageCount.toString())
+                Text("${pagerState.currentPage + 1} / ${pagerState.pageCount}")
 
                 if (pagerState.canScrollForward) {
                     Button({

@@ -32,6 +32,7 @@ import coil.request.ImageRequest
 import com.viseo.mybookshelf.domain.Book
 import com.viseo.mybookshelf.ui.R
 import com.viseo.mybookshelf.ui.booksearch.BookSearchDetailsViewModel
+import com.viseo.mybookshelf.ui.common.extensions.getAuthors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,8 +105,7 @@ private fun Details(
 
         // Book Authors/Publishers
         Text(
-            text = book.authors?.joinToString() ?: book.publishers?.joinToString()
-            ?: "unknown",
+            text = book.getAuthors(),
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(bottom = 8.dp)
